@@ -1,0 +1,27 @@
+{
+  "name": "squirt",
+  "version": "1.0.0",
+  "description": "Apologies to those PRs that got hosed by decoupling squirt.io from the bookmarklet source--resubmit and I'll be happy to engage.",
+  "main": "bookmarklet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisbaume/squirt.git"
+  },
+  "author": "Chris Baume",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisbaume/squirt/issues"
+  },
+  "homepage": "https://github.com/chrisbaume/squirt#readme",
+  "devDependencies": {
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1",
+    "webpack-dev-server": "^3.1.9"
+  }
+}
