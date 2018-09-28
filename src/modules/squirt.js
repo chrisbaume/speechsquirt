@@ -1,10 +1,7 @@
-var sq = window.sq;
-sq.version = '0.0.1';
-sq.host =  window.location.search.match('sq-dev') ?
-  document.scripts[document.scripts.length - 1].src.match(/\/\/.*\//)[0]
-        : '//www.squirt.io/bm/';
+import launchReadability from './readability.js';
 
-(function(Keen){
+function launch(Keen){
+  var readability;
   Keen.addEvent('load');
 
   on('mousemove', function(){
@@ -40,19 +37,8 @@ sq.host =  window.location.search.match('sq-dev') ?
         return read(container.textContent);
       }
 
-      // text source: readability
-      var handler;
-      function readabilityReady(){
-        handler && document.removeEventListener('readility.ready', handler);
-        read(readability.grabArticleText());
-      };
-
-      if(window.readability) return readabilityReady();
-
-      makeEl('script', {
-        src: sq.host + 'readability.js'
-      }, document.head);
-      handler = on('readability.ready', readabilityReady);
+      readability = launchReadability();
+      read(readability.grabArticleText());
     };
   })(makeRead(makeTextToNodes(wordToNode)), makeGUI);
 
@@ -141,12 +127,6 @@ sq.host =  window.location.search.match('sq-dev') ?
     function finalWord(){
       Keen.addEvent('final-word');
       toggle(document.querySelector('.sq .reader'));
-      if(window.location.hostname.match('squirt.io|localhost')){
-        window.location.href = '/install.html';
-      } else {
-        showTweetButton(nodes.length,
-          (nodes.length * intervalMs / 1000 / 60).toFixed(1));
-      }
       toggle(finalWordContainer);
       return;
     };
@@ -545,8 +525,10 @@ sq.host =  window.location.search.match('sq-dev') ?
     return (el.style.display = s.display == 'none' ? 'block' : 'none') == 'block';
   };
 
-})((function injectKeen(){
-  window.Keen=window.Keen||{configure:function(e){this._cf=e},addEvent:function(e,t,n,i){this._eq=this._eq||[],this._eq.push([e,t,n,i])},setGlobalProperties:function(e){this._gp=e},onChartsReady:function(e){this._ocrq=this._ocrq||[],this._ocrq.push(e)}};(function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src=("https:"==document.location.protocol?"https://":"http://")+"dc8na2hxrj29i.cloudfront.net/code/keen-2.1.0-min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
+};
+
+function injectKeen(){
+  window.Keen=window.Keen||{configure:function(e){this._cf=e},addEvent:function(e,t,n,i){this._eq=this._eq||[],this._eq.push([e,t,n,i])},setGlobalProperties:function(e){this._gp=e},onChartsReady:function(e){this._ocrq=this._ocrq||[],this._ocrq.push(e)}};(function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src=("https:"==document.location.protocol?"https://":"http://")+"cdnjs.cloudflare.com/ajax/libs/keen-js/5.0.5/keen.bundle.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
 
   var Keen = window.Keen;
   var prod = {
@@ -590,4 +572,12 @@ sq.host =  window.location.search.match('sq-dev') ?
   });
 
   return Keen;
-})());
+};
+
+export default function squirt() {
+  var sq = window.sq;
+  sq.version = '0.0.1';
+  sq.host = document.scripts[document.scripts.length - 1].src.match(/\/\/.*\//)[0];
+  launch(injectKeen());
+};
+

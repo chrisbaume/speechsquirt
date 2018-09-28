@@ -5,6 +5,8 @@
  * Readability is licensed under the Apache License, Version 2.0.
  **/
 
+export default function launch() {
+
 var dbg = function() {};
 
 var readability = {
@@ -1126,4 +1128,6 @@ var readability = {
     }
 };
 
-document.dispatchEvent(new Event('readability.ready'));
+return readability;
+};
+
