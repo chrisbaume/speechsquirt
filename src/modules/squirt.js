@@ -1,7 +1,4 @@
-import launchReadability from './readability.js';
-
 function launch(Keen){
-  var readability;
   Keen.addEvent('load');
 
   on('mousemove', function(){
@@ -38,8 +35,6 @@ function launch(Keen){
       }
 
       read(document.getElementById('transcript').innerHTML);
-      //readability = launchReadability();
-      //read(readability.grabArticleText());
     };
   })(makeRead(makeTextToNodes(wordToNode)), makeGUI);
 
