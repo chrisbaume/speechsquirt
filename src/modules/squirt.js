@@ -66,6 +66,7 @@ function launch(Keen){
       on('squirt.close', function(){
         sq.closed = true;
         clearTimeout(nextNodeTimeoutId);
+        player.pause();
         Keen.addEvent('close');
       });
 
@@ -89,8 +90,9 @@ function launch(Keen){
 
       on('squirt.rewind', function(e){
         !sq.paused && clearTimeout(nextNodeTimeoutId);
-        let newTime = player.getCurrentTime() - e.seconds;
+        let newTime = Math.max(player.getCurrentTime() - e.seconds, 0);
         while(nodes[nodeIdx].start > newTime) {
+          if (nodeIdx==0) break;
           incrememntNodeIdx(-1);
         }
         player.setCurrentTime(newTime);
