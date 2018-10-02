@@ -37,8 +37,9 @@ function launch(Keen){
         return read(container.textContent);
       }
 
-      readability = launchReadability();
-      read(readability.grabArticleText());
+      read(document.getElementById('transcript').innerHTML);
+      //readability = launchReadability();
+      //read(readability.grabArticleText());
     };
   })(makeRead(makeTextToNodes(wordToNode)), makeGUI);
 
@@ -142,6 +143,7 @@ function launch(Keen){
       wordContainer.appendChild(lastNode);
       lastNode.instructions && invoke(lastNode.instructions);
       if(sq.paused) return;
+      // TODO change timeout to next timestamp
       nextNodeTimeoutId = setTimeout(nextNode, intervalMs * getDelay(lastNode, jumped));
     };
 
@@ -218,12 +220,18 @@ function launch(Keen){
 
   function makeTextToNodes(wordToNode) {
     return function textToNodes(text) {
-      text = "3\n 2\n 1\n " + text.trim('\n').replace(/\s+\n/g,'\n');
-      return text
-             .replace(/[\,\.\!\:\;](?![\"\'\)\]\}])/g, "$& ")
-             .split(/[\s]+/g)
-             .filter(function(word){ return word.length; })
-             .map(wordToNode);
+
+      let parser = new DOMParser();
+      let html = parser.parseFromString(text, 'text/html');
+      let words = Array.from(html.getElementsByTagName('span'));
+      return words.map(wordToNode);
+
+      //text = "3\n 2\n 1\n " + text.trim('\n').replace(/\s+\n/g,'\n');
+      //return text
+             //.replace(/[\,\.\!\:\;](?![\"\'\)\]\}])/g, "$& ")
+             //.split(/[\s]+/g)
+             //.filter(function(word){ return word.length; })
+             //.map(wordToNode);
     };
   };
 
@@ -262,7 +270,10 @@ function launch(Keen){
 
   function wordToNode(word) {
     var node = makeDiv({'class': 'word'});
-    node.word = parseSQInstructionsForWord(word, node);
+    //node.word = parseSQInstructionsForWord(word, node);
+    node.word = word.innerHTML;
+    node.start = word.attributes.getNamedItem('start').value;
+    node.end = word.attributes.getNamedItem('end').value;
 
     var orpIdx = getORPIndex(node.word);
 
