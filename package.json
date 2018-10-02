@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch",
     "start": "webpack-dev-server --open",
+    "deploy": "gh-pages -d dist",
     "build": "webpack"
   },
   "repository": {
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/chrisbaume/squirt#readme",
   "devDependencies": {
+    "gh-pages": "^2.0.0",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.9"
