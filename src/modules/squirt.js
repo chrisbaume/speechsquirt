@@ -1,3 +1,5 @@
+import * as player from './player.js';
+
 function launch(Keen){
   Keen.addEvent('load');
 
@@ -16,6 +18,7 @@ function launch(Keen){
 
     function startSquirt(){
       Keen.addEvent('start');
+      player.init();
       showGUI();
       getText(read);
     };
@@ -39,7 +42,7 @@ function launch(Keen){
   })(makeRead(makeTextToNodes(wordToNode)), makeGUI);
 
   function makeRead(textToNodes) {
-    sq.paused = false;
+    sq.paused = true;
     var nodeIdx,
         nodes,
         lastNode,
@@ -85,13 +88,12 @@ function launch(Keen){
       });
 
       on('squirt.rewind', function(e){
-        // Rewind by `e.value` seconds. Then walk back to the
-        // beginning of the sentence.
         !sq.paused && clearTimeout(nextNodeTimeoutId);
-        incrememntNodeIdx(-Math.floor(e.seconds * 1000 / intervalMs));
-        while(!nodes[nodeIdx].word.match(/\./) && nodeIdx < 0){
+        let newTime = player.getCurrentTime() - e.seconds;
+        while(nodes[nodeIdx].start > newTime) {
           incrememntNodeIdx(-1);
         }
+        player.setCurrentTime(newTime);
         nextNode(true);
         Keen.addEvent('rewind');
       });
@@ -101,6 +103,7 @@ function launch(Keen){
       sq.paused = true;
       dispatch('squirt.pause.after');
       clearTimeout(nextNodeTimeoutId);
+      player.pause();
       Keen.addEvent('pause');
     };
 
@@ -109,6 +112,7 @@ function launch(Keen){
       dispatch('squirt.pause.after');
       document.querySelector('.sq .wpm-selector').style.display = 'none'
       nextNode(e.jumped);
+      player.play();
       e.notForKeen === undefined && Keen.addEvent('play');
     };
 
@@ -138,8 +142,8 @@ function launch(Keen){
       wordContainer.appendChild(lastNode);
       lastNode.instructions && invoke(lastNode.instructions);
       if(sq.paused) return;
-      // TODO change timeout to next timestamp
-      nextNodeTimeoutId = setTimeout(nextNode, intervalMs * getDelay(lastNode, jumped));
+      let timeout = (nodes[nextIdx+1].start - player.getCurrentTime())*1000;
+      nextNodeTimeoutId = setTimeout(nextNode, timeout);
     };
 
     var waitAfterShortWord = 1.2;
@@ -209,7 +213,7 @@ function launch(Keen){
       nodeIdx = 0;
 
       prerender();
-      dispatch('squirt.play');
+      //dispatch('squirt.play');
     };
   };
 
@@ -304,7 +308,7 @@ function launch(Keen){
       27: dispatch.bind(null, 'squirt.close'),
       38: dispatch.bind(null, 'squirt.wpm.adjust', {value: 10}),
       40: dispatch.bind(null, 'squirt.wpm.adjust', {value: -10}),
-      37: dispatch.bind(null, 'squirt.rewind', {seconds: 10})
+      37: dispatch.bind(null, 'squirt.rewind', {seconds: 2})
   };
 
   function handleKeypress(e){
@@ -406,10 +410,10 @@ function launch(Keen){
         var a = makeEl('a', {}, container);
         a.href = '#';
         on(container, 'click', function(e){
-          dispatch('squirt.rewind', {seconds: 10});
+          dispatch('squirt.rewind', {seconds: 2});
           e.preventDefault();
         });
-        a.innerHTML = "<i class='fa fa-backward'></i> 10s";
+        a.innerHTML = "<i class='fa fa-backward'></i> 2s";
       })();
 
       (function makePause(){
