@@ -1,6 +1,7 @@
 # SpeechSquirt
 
-An experimental interface for displaying timed transcripts, one word at a time.
+An experimental interface for displaying timed transcripts, one word at a time (known as "rapid serial visual
+presentation", or RSVP), with synchronised playback of the speech recording.
 
 ### Demo
 
