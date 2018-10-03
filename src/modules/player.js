@@ -1,11 +1,11 @@
 var audioPlayer;
 
 export function play() {
-  audioPlayer.play();
+  if (audioPlayer) audioPlayer.play();
 }
 
 export function pause() {
-  audioPlayer.pause();
+  if (audioPlayer) audioPlayer.pause();
 }
 
 export function getCurrentTime() {
@@ -13,7 +13,7 @@ export function getCurrentTime() {
 }
 
 export function setCurrentTime(time) {
-  audioPlayer.currentTime = time;
+  if (audioPlayer) audioPlayer.currentTime = time;
 }
 
 export function getSpeed() {
@@ -21,7 +21,7 @@ export function getSpeed() {
 }
 
 export function setSpeed(rate) {
-  audioPlayer.playbackRate = rate;
+  if (audioPlayer) audioPlayer.playbackRate = rate;
 }
 
 export function init() {
