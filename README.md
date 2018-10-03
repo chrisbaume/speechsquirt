@@ -20,5 +20,5 @@ and navigate to [http://localhost:4000/](http://localhost:4000/)
 
 Publish to Github Pages:
 
-    npm build
-    npm deploy
+    npm run build
+    npm run deploy
