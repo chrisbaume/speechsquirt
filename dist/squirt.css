@@ -97,7 +97,7 @@
   z-index: 1;
 }
 
-.sq .controls a, .sq .wpm-selector a{
+.sq .controls a, .sq .speed-selector a{
   pointer-events: none;
 }
 
@@ -125,7 +125,7 @@
   cursor: pointer;
 }
 
-.sq .wpm-selector {
+.sq .speed-selector {
   height: 100%;
   position: absolute;
   top:0;
@@ -133,7 +133,7 @@
   width: 401%;
 }
 
-.sq .wpm-option {
+.sq .speed-option {
   margin: 0 3px 3px 0;
   width: 32.75%; 
   height: 80px;
@@ -143,20 +143,20 @@
   cursor: pointer;
 }
 
-.sq .wpm-plus-50 {
+.sq .speed-plus-50 {
   color: rgba(0, 155, 216, 0.39);
 }
 
-.sq .wpm-option:hover, .sq .wpm-option:active {
+.sq .speed-option:hover, .sq .speed-option:active {
   background-color: #EFEFEF;
 }
 
-.sq .wpm-option a {
+.sq .speed-option a {
   pointer-events: none;
   font-size: 1.4em;
 }
 
-.sq .control.wpm div{
+.sq .control.speed div{
   font-size: .8em;
 }
 
@@ -214,13 +214,13 @@ and (orientation: landscape){
    padding-top: 20%;
  }
 
- .sq .wpm-option {
+ .sq .speed-option {
    height: 32.3%;
    margin: 0 0.5% 0.5% 0;
    padding-top: 0;
  }
 
- .sq .wpm-option a {
+ .sq .speed-option a {
    padding-top: 13%;
  }
 
@@ -247,7 +247,7 @@ and (orientation: portrait){
    height: 74px;
  }
 
- .sq .wpm-selector {
+ .sq .speed-selector {
    left: 0;
    top:-44%;
    width: 100%;
@@ -266,11 +266,11 @@ and (orientation: portrait){
    font-size: .9em;
  }
 
- .sq .wpm-option:nth-child(3n){
+ .sq .speed-option:nth-child(3n){
    margin-right:0;        
  }
 
- .sq .wpm-option {
+ .sq .speed-option {
    height: 82px;
    padding-top: 50px;
    width: 32.67%;

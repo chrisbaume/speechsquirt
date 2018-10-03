@@ -56,10 +56,9 @@ function launch(Keen){
       return ret;
     };
 
-    var intervalMs, _wpm;
-    function wpm(wpm){
-      _wpm = wpm;
-      intervalMs = 60 * 1000 / wpm ;
+    var _speed;
+    function speed(speed){
+      _speed = speed;
     };
 
     (function readerEventHandlers(){
@@ -70,15 +69,16 @@ function launch(Keen){
         Keen.addEvent('close');
       });
 
-      on('squirt.wpm.adjust', function(e){
-        dispatch('squirt.wpm', {value: e.value + _wpm});
+      on('squirt.speed.adjust', function(e){
+        dispatch('squirt.speed', {value: e.value + _speed});
       });
 
-      on('squirt.wpm', function(e){
-        sq.wpm = Number(e.value);
-        wpm(e.value);
-        dispatch('squirt.wpm.after');
-        e.notForKeen == undefined && Keen.addEvent('wpm', {'wpm': sq.wpm});
+      on('squirt.speed', function(e){
+        sq.speed = Number(e.value);
+        speed(e.value);
+        player.setSpeed(sq.speed);
+        dispatch('squirt.speed.after');
+        e.notForKeen == undefined && Keen.addEvent('speed', {'speed': sq.speed});
       });
 
       on('squirt.pause', pause);
@@ -112,7 +112,7 @@ function launch(Keen){
     function play(e){
       sq.paused = false;
       dispatch('squirt.pause.after');
-      document.querySelector('.sq .wpm-selector').style.display = 'none'
+      document.querySelector('.sq .speed-selector').style.display = 'none'
       nextNode(e.jumped);
       player.play();
       e.notForKeen === undefined && Keen.addEvent('play');
@@ -144,7 +144,7 @@ function launch(Keen){
       wordContainer.appendChild(lastNode);
       lastNode.instructions && invoke(lastNode.instructions);
       if(sq.paused) return;
-      let timeout = (nodes[nextIdx+1].start - player.getCurrentTime())*1000;
+      let timeout = (nodes[nextIdx+1].start - player.getCurrentTime())/sq.speed*1000;
       nextNodeTimeoutId = setTimeout(nextNode, timeout);
     };
 
@@ -193,7 +193,7 @@ function launch(Keen){
         modal.innerHTML = '<div class="error">Oops! This page is too hard for Squirt to read. We\'ve been notified, and will do our best to resolve the issue shortly.</div>';
     };
 
-    dispatch('squirt.wpm', {value: 400, notForKeen: true});
+    dispatch('squirt.speed', {value: 1.0, notForKeen: true});
 
     var wordContainer,
         prerenderer,
@@ -246,7 +246,7 @@ function launch(Keen){
       .map(function(instruction){
         var val = Number(instruction.split('=')[1]);
         node.instructions.push(function(){
-          dispatch('squirt.wpm', {value: val, notForKeen: true})
+          dispatch('squirt.speed', {value: val, notForKeen: true})
         });
       });
       return word.replace(instructionsRE, '');
@@ -308,8 +308,8 @@ function launch(Keen){
   var keyHandlers = {
       32: dispatch.bind(null, 'squirt.play.toggle'),
       27: dispatch.bind(null, 'squirt.close'),
-      38: dispatch.bind(null, 'squirt.wpm.adjust', {value: 10}),
-      40: dispatch.bind(null, 'squirt.wpm.adjust', {value: -10}),
+      38: dispatch.bind(null, 'squirt.speed.adjust', {value: 0.2}),
+      40: dispatch.bind(null, 'squirt.speed.adjust', {value: -0.2}),
       37: dispatch.bind(null, 'squirt.rewind', {seconds: 2})
   };
 
@@ -359,45 +359,47 @@ function launch(Keen){
     (function make(controls){
 
       // this code is suffering from delirium
-      (function makeWPMSelect(){
+      (function makeSpeedSelect(){
 
         // create the ever-present left-hand side button
-        var control = makeDiv({'class': 'sq wpm sq control'}, controls);
-        var wpmLink = makeEl('a', {}, control);
-        bind("{{wpm}} WPM", sq, wpmLink);
-        on('squirt.wpm.after', wpmLink.render);
+        var control = makeDiv({'class': 'sq speed sq control'}, controls);
+        var speedLink = makeEl('a', {}, control);
+        on('squirt.speed.after', function() {
+          speedLink.textContent = 'x'+parseFloat(sq.speed).toFixed(1);
+        });
+        dispatch('squirt.speed.after');
         on(control, 'click', function(){
-          toggle(wpmSelector) ?
+          toggle(speedSelector) ?
             dispatch('squirt.pause') :
             dispatch('squirt.play');
         });
 
         // create the custom selector
-        var wpmSelector = makeDiv({'class': 'sq wpm-selector'}, controls);
-        wpmSelector.style.display = 'none';
-        var plus50OptData = {add: 50, sign: "+"};
+        var speedSelector = makeDiv({'class': 'sq speed-selector'}, controls);
+        speedSelector.style.display = 'none';
+        var plus50OptData = {add: 0, sign: "+"};
         var datas = [];
-        for(var wpm = 200; wpm < 1000; wpm += 100){
-          var opt = makeDiv({'class': 'sq wpm-option'}, wpmSelector);
+        for(var speed = 0.4; speed <= 2; speed += 0.2){
+          var opt = makeDiv({'class': 'sq speed-option'}, speedSelector);
           var a = makeEl('a', {}, opt);
-          a.data = { baseWPM: wpm };
+          a.data = { basespeed: speed };
           a.data.__proto__ = plus50OptData;
           datas.push(a.data);
-          bind("{{wpm}}",  a.data, a);
+          bind("{{speed}}",  a.data, a);
           on(opt, 'click', function(e){
-            dispatch('squirt.wpm', {value: e.target.firstChild.data.wpm});
+            dispatch('squirt.speed', {value: e.target.firstChild.data.speed});
             dispatch('squirt.play');
-            wpmSelector.style.display = 'none';
+            speedSelector.style.display = 'none';
           });
         };
 
         // create the last option for the custom selector
-        var plus50Opt = makeDiv({'class': 'sq wpm-option sq wpm-plus-50'}, wpmSelector);
+        var plus50Opt = makeDiv({'class': 'sq speed-option sq speed-plus-50'}, speedSelector);
         var a = makeEl('a', {}, plus50Opt);
         bind("{{sign}}50", plus50OptData, a);
         on(plus50Opt, 'click', function(){
           datas.map(function(data){
-            data.wpm = data.baseWPM + data.add;
+            data.speed = data.basespeed + data.add;
           });
           var toggle = plus50OptData.sign == '+';
           plus50OptData.sign = toggle ? '-' : '+';
