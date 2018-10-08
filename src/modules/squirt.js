@@ -57,6 +57,8 @@ function launch(Keen){
     };
 
     var _speed;
+    var minSpeed = 0.2;
+    var maxSpeed = 3.0;
     function speed(speed){
       _speed = speed;
     };
@@ -70,7 +72,8 @@ function launch(Keen){
       });
 
       on('squirt.speed.adjust', function(e){
-        dispatch('squirt.speed', {value: e.value + _speed});
+        let newSpeed = Math.max(Math.min(_speed + e.value, maxSpeed), minSpeed);
+        dispatch('squirt.speed', {value: newSpeed});
       });
 
       on('squirt.speed', function(e){
