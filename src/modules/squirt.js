@@ -388,7 +388,7 @@ function launch(Keen){
           a.data = { basespeed: speed };
           a.data.__proto__ = plus50OptData;
           datas.push(a.data);
-          bind("{{speed}}",  a.data, a);
+          bind("{{speedLabel}}",  a.data, a);
           on(opt, 'click', function(e){
             dispatch('squirt.speed', {value: e.target.firstChild.data.speed});
             dispatch('squirt.play');
@@ -403,6 +403,7 @@ function launch(Keen){
         on(plus50Opt, 'click', function(){
           datas.map(function(data){
             data.speed = data.basespeed + data.add;
+            data.speedLabel = 'x'+parseFloat(data.speed).toFixed(1);
           });
           var toggle = plus50OptData.sign == '+';
           plus50OptData.sign = toggle ? '-' : '+';
